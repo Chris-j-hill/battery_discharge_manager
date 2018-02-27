@@ -6,7 +6,8 @@
 #define RANGE 1024
 #define NOMINAL_VOLTAGE 5
 #define MINIMUM_VOLTAGE_TO_START_DISCHARGE 3.7
-
+#define MINIMUM_VOLTAGE 3
+#define DISCHARGE_CURRENT 1000    //millisamps to discharge at
 
 class battery{
 
@@ -19,15 +20,20 @@ class battery{
   void set_pwm();
   void increment_mosfet();
   void config_resistance(double resistance);
+  void bjt_off();
 
+  bool discharge_this_cell = false;
 
-  private:
   int voltage;
   int current;
+  int start_time;
+  int milliamp_hours[QUEUE_SIZE];
+  int current_mosfet;
+    
+  private:
   int resistance;
-  int amp_hours;
+  
 
-  int start_time();
   int analog0_reading;
   int analog1_reading;
   int bjt_value;
@@ -37,9 +43,9 @@ class battery{
   int analog0_pin;
   int analog1_pin;
   int mosfet_pin[QUEUE_SIZE];
-  int current_mosfet;
+  
   int bjt_pin;
-  bool discharge_this_cell = false;
+  int bjt_pwm_val =0;
       
 };
 

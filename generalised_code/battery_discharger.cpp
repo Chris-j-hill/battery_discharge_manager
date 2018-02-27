@@ -49,25 +49,48 @@ void battery::update_values() {
 }
 void battery::check_voltage() {  //for checking the voltage when the current is off
 
-  for (int i =0; i<QUEUE_SIZE;i++){//turn off all mosfets
-    digitalWrite(mosfet_pin[i],LOW);
+  for (int i = 0; i < QUEUE_SIZE; i++) { //turn off all mosfets
+    digitalWrite(mosfet_pin[i], LOW);
   }
   analogWrite(bjt_pin, LOW); //force bjt off for reading
 
   digitalWrite(mosfet_pin[current_mosfet], HIGH);  //turn on current mosfet
-  
+  delay(50);  //delay to allow voltage to stabilise
   voltage = (analogRead(analog0_pin) * NOMINAL_VOLTAGE) / RANGE;  //take reading
-  
+
   if (voltage < MINIMUM_VOLTAGE_TO_START_DISCHARGE) { // if value below starting voltage increment mosfet pin
     current_mosfet = (current_mosfet + 1) % QUEUE_SIZE;   //cycle through mosfet pins
   }
-  else 
-  discharge_this_cell = true;
-
+  else {
+    discharge_this_cell = true;
+    start_time = millis();
+  }
 }
 
 void battery::read_inputs() {}
-void battery::set_pwm() {}
+
+void battery::set_pwm() {
+  if (current < DISCHARGE_CURRENT) {
+    if (bjt_pwm_val > 254)
+      bjt_pwm_val = 255;
+    else
+      bjt_pwm_val++;
+    analogWrite(bjt_pin, bjt_pwm_val);
+  }
+
+  else if (current > DISCHARGE_CURRENT) {
+    if (bjt_pwm_val < 1)
+      bjt_pwm_val = 0;
+    else
+      bjt_pwm_val--;
+    analogWrite(bjt_pin, bjt_pwm_val);
+  }
+}
+
+
 void battery::increment_mosfet() {}
 void battery::config_resistance(double resistance) {}
+void battery::bjt_off() {
+  analogWrite(bjt_pin, LOW);
+}
 
