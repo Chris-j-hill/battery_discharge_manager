@@ -30,6 +30,8 @@ class battery{
   int milliamp_hours[QUEUE_SIZE];
   int current_mosfet;
     
+  
+  
   private:
   int resistance;
   

@@ -3,7 +3,7 @@
 
 
 
-const double resistor[3] = {0.5, 0.5, 0.5};
+const double resistor[3] = {1.5, 1.5, 1.5};
 
 battery bat1; //three queues
 battery bat2;
