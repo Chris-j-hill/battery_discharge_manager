@@ -1,14 +1,15 @@
 
 //#define DEBUG_MODE      // used to measure the voltage drop accross the resistor for different pwm values
-int pwm_val = 180;
+int pwm_val = 50;
 int analog0 = 0;
 int analog1 = 0;
 byte increment = 1;
-double resistance = 0.517;
+double resistance = 1.65;
+//double resistance = 0.517;
 double current = 0.00;
 double voltage = 0.00;
 double range = 1024.00;
-double target_current = 1.5;
+double target_current = 1.0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -89,6 +90,6 @@ void loop() {
   Serial.print(current);
 
   Serial.println();
-  delay(100);
+  delay(50);
 }
 #endif
