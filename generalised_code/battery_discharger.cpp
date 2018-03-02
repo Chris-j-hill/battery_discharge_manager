@@ -33,19 +33,6 @@ battery::battery() {
   num_battery_in_parallel++;  //increment for next instanciation
 
 }
-//
-//void battery::update_values() {
-//
-//  if (mosfet_pin_on < 0) { //if no battery is on, skip reading
-//    return;
-//  }
-//
-//  analog0_reading = analogRead(analog0_pin);
-//  analog1_reading = analogRead(analog1_pin);
-//
-//  voltage = (analog0_reading * NOMINAL_VOLTAGE) / RANGE;
-//  current = ((analog0_reading - analog1_reading) * NOMINAL_VOLTAGE) / RANGE;
-//}
 
 void battery::check_voltage() {  //for checking the voltage when the current is off
 
@@ -55,9 +42,10 @@ void battery::check_voltage() {  //for checking the voltage when the current is 
   analogWrite(bjt_pin, LOW); //force bjt off for reading
 
   digitalWrite(mosfet_pin[current_mosfet], HIGH);  //turn on current mosfet
-  delay(50);  //delay to allow voltage to stabilise
-  voltage = (analogRead(analog0_pin) * NOMINAL_VOLTAGE) / RANGE;  //take reading
-
+  delay(20);  //delay to allow voltage to stabilise
+  voltage = (double)(analogRead(analog0_pin) * NOMINAL_VOLTAGE) / RANGE;  //take reading
+  voltage = voltage+mosfet_voltage_drop[current_mosfet];
+  
   if (voltage < MINIMUM_VOLTAGE_TO_START_DISCHARGE) { // if value below starting voltage increment mosfet pin
     current_mosfet = (current_mosfet + 1) % QUEUE_SIZE;   //cycle through mosfet pins
   }
@@ -76,9 +64,9 @@ void battery::read_inputs() {
   analog0_reading = analogRead(analog0_pin);
   analog1_reading = analogRead(analog1_pin);
 
-  voltage = (analog0_reading * NOMINAL_VOLTAGE) / RANGE;
-  voltage = voltage+mosfet_voltage_drop;
-  current = ((analog0_reading - analog1_reading) * NOMINAL_VOLTAGE) / RANGE;
+  voltage = (double)(analog0_reading * NOMINAL_VOLTAGE) / RANGE;
+  voltage = voltage+mosfet_voltage_drop[current_mosfet];
+  current = (double)((analog0_reading - analog1_reading) * NOMINAL_VOLTAGE) / RANGE;
 }
 
 void battery::set_pwm() {
@@ -107,7 +95,7 @@ void battery::bjt_off() {
   analogWrite(bjt_pin, LOW);
 }
 
-void battery::config_mosfet_voltage_drop(int queue_mosfets[QUEUE_SIZE]) {
+void battery::config_mosfet_voltage_drop(double queue_mosfets[QUEUE_SIZE]) {
   for (int i = 0; i < QUEUE_SIZE; i++){
     mosfet_voltage_drop[i] = queue_mosfets[i];
     cell_cut_off_voltage[i] = MINIMUM_VOLTAGE - queue_mosfets[i];
@@ -138,17 +126,18 @@ void battery::print_pins(){
 
   Serial.print("analog0:");
   Serial.print(analog0_pin);
-  Serial.print("analog1:");
+  Serial.print("\t analog1:");
   Serial.print(analog1_pin);
   
   for(int i=0;i<QUEUE_SIZE;i++){
-    Serial.print("mosfet ");
+    Serial.print("\t mosfet ");
     Serial.print(i);
     Serial.print(":");
     Serial.print(mosfet_pin[i]);
   }
 
-  Serial.print("bjt pin:");
+  Serial.print("\t bjt pin:");
   Serial.print(bjt_pin);
+  Serial.println();
 }
 
