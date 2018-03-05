@@ -11,7 +11,7 @@ double queue4[QUEUE_SIZE] = {0.7, 0.7, 0.7, 0.7};
 };
 Mosfet mosfet;
 
-battery bat1; //three queues
+battery bat1; //four queues
 battery bat2;
 battery bat3;
 battery bat4;
