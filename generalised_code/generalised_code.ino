@@ -1,12 +1,12 @@
 #include "battery_discharger.h"
 
 const double resistor[] = {1.5, 1.5, 1.5, 1.5};
-struct Mosfet{
+struct Mosfet {
 
-double queue1[QUEUE_SIZE] = {0.7, 0.7, 0.7, 0.7};
-double queue2[QUEUE_SIZE] = {0.7, 0.7, 0.7, 0.7};
-double queue3[QUEUE_SIZE] = {0.7, 0.7, 0.7, 0.7};
-double queue4[QUEUE_SIZE] = {0.7, 0.7, 0.7, 0.7};
+  double queue1[QUEUE_SIZE] = {0.7, 0.7, 0.7, 0.7};
+  double queue2[QUEUE_SIZE] = {0.7, 0.7, 0.7, 0.7};
+  double queue3[QUEUE_SIZE] = {0.7, 0.7, 0.7, 0.7};
+  double queue4[QUEUE_SIZE] = {0.7, 0.7, 0.7, 0.7};
 
 };
 Mosfet mosfet;
@@ -18,12 +18,12 @@ battery bat4;
 
 void setup() {
 
-Serial.begin(115200);
+  Serial.begin(115200);
   bat1.config_resistance(resistor[0]);
   bat2.config_resistance(resistor[1]);
   bat3.config_resistance(resistor[2]);
   bat4.config_resistance(resistor[3]);
-  
+
   bat1.config_mosfet_voltage_drop(mosfet.queue1);
   bat2.config_mosfet_voltage_drop(mosfet.queue2);
   bat3.config_mosfet_voltage_drop(mosfet.queue3);
@@ -44,20 +44,20 @@ void loop() {
   manage_bat3();
   manage_bat4();
 
-//  bat1.print_data();
-//  bat2.print_data();
-//  bat3.print_data();
-//  bat4.print_data();
-
-  delay(20);
+  bat1.print_data();
+  bat2.print_data();
+  bat3.print_data();
+  bat4.print_data();
+  Serial.println("==========================================================================================");
+  delay(300);
 
 }
 
 
-void manage_bat1(){
+void manage_bat1() {
   if (bat1.discharge_this_cell) {
     bat1.read_inputs(); //get input values
-    
+
     if (bat1.voltage <= bat1.cell_cut_off_voltage[bat1.current_mosfet]) {  // if discharged, stop current, log milliamp hours
       bat1.bjt_off();
       bat1.discharge_this_cell = false;
@@ -70,15 +70,15 @@ void manage_bat1(){
       bat1.set_pwm();
     }
   }
-  else{
+  else {
     bat1.check_voltage(); //check voltage of batteries, start discharge if above minimum value
   }
 }
 
-void manage_bat2(){
+void manage_bat2() {
   if (bat2.discharge_this_cell) {
     bat2.read_inputs(); //get input values
-    
+
     if (bat2.voltage <= bat2.cell_cut_off_voltage[bat2.current_mosfet]) {  // if discharged, stop current, log milliamp hours
       bat2.bjt_off();
       bat2.discharge_this_cell = false;
@@ -91,15 +91,15 @@ void manage_bat2(){
       bat2.set_pwm();
     }
   }
-  else{
+  else {
     bat2.check_voltage(); //check voltage of batteries, start discharge if above minimum value
   }
 }
 
-void manage_bat3(){
+void manage_bat3() {
   if (bat3.discharge_this_cell) {
     bat3.read_inputs(); //get input values
-    
+
     if (bat3.voltage <= bat3.cell_cut_off_voltage[bat3.current_mosfet]) {  // if discharged, stop current, log milliamp hours
       bat3.bjt_off();
       bat3.discharge_this_cell = false;
@@ -112,15 +112,15 @@ void manage_bat3(){
       bat3.set_pwm();
     }
   }
-  else{
+  else {
     bat3.check_voltage(); //check voltage of batteries, start discharge if above minimum value
   }
 }
 
-void manage_bat4(){
+void manage_bat4() {
   if (bat4.discharge_this_cell) {
     bat4.read_inputs(); //get input values
-    
+
     if (bat4.voltage <= bat4.cell_cut_off_voltage[bat4.current_mosfet]) {  // if discharged, stop current, log milliamp hours
       bat4.bjt_off();
       bat4.discharge_this_cell = false;
@@ -133,7 +133,7 @@ void manage_bat4(){
       bat4.set_pwm();
     }
   }
-  else{
+  else {
     bat4.check_voltage(); //check voltage of batteries, start discharge if above minimum value
   }
 }
